@@ -1,7 +1,9 @@
 import Layout from "../components/Layout";
-import useFetchTodo from "../hooks/useFetchTodo";
-import { ReactComponent as EmptySVG } from "../assets/no-data.svg";
+import ActivityCard from "../components/ActivityCard";
+import ModalConfirmation from "../components/Modals/ModalConfirmation";
+import useFetchActivity from "../hooks/useFetchActivity";
 
+import { ReactComponent as EmptySVG } from "../assets/no-data.svg";
 import {
   Box,
   Button,
@@ -13,45 +15,49 @@ import {
   useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
-
 import { AddIcon } from "@chakra-ui/icons";
-import { useCallback, useState } from "react";
-import {
-  createActivity,
-  deleteActivity,
-  getActivity,
-} from "../helpers/activity-fetcher";
-import ActivityCard from "../components/ActivityCard";
-import ModalConfirmation from "../components/Modals/ModalConfirmation";
+import { useCallback, useEffect, useState } from "react";
+import { createActivity, getActivity } from "../helpers/activity-fetcher";
+import EmptyData from "../components/EmptyData";
 
 function HomePage() {
   const { isOpen: isModalOpen, onOpen, onClose } = useDisclosure();
 
-  const { todo, isLoading, setIsLoading, setTodo, isEmpty } = useFetchTodo();
-  const [isCreating, setIsCreating] = useState(false);
+  const { activity, isLoading, setIsLoading, setActivity, isEmpty } =
+    useFetchActivity();
+  const [isNeedRefetch, setIsNeedRefetch] = useState(false);
 
   const [currentTitle, setCurrentTitle] = useState("");
   const [currentID, setCurrentID] = useState(0);
 
   const onClickAdd = async () => {
-    setIsCreating(true);
+    setIsLoading(true);
     const response = await createActivity();
-
     if (response.statusText === "Created") {
-      setIsCreating(false);
-      setIsLoading(true);
-      const response = await getActivity();
-      setTodo(response.data);
-      setIsLoading(false);
+      setIsNeedRefetch(true);
     }
   };
 
   const onClickDelete = useCallback(async (id, title) => {
     onOpen();
-    console.log(id, title);
     setCurrentTitle(title);
     setCurrentID(id);
   }, []);
+
+  useEffect(() => {
+    // ? Refetch if any item is being created or deleted
+    async function refetchData() {
+      if (isNeedRefetch) {
+        setIsLoading(true);
+        const response = await getActivity();
+        setActivity(response.data);
+        setIsLoading(false);
+        setIsNeedRefetch(false);
+      }
+    }
+
+    refetchData();
+  }, [isNeedRefetch]);
 
   return (
     <Layout>
@@ -68,21 +74,17 @@ function HomePage() {
           variant="solid"
           data-cy="activity-add-button"
           onClick={onClickAdd}
-          isLoading={isCreating}
+          isLoading={isLoading}
         >
           Tambah
         </Button>
       </Flex>
 
       {isEmpty && (
-        <Center>
-          <Box m="auto" data-cy="activity-empty-state">
-            <EmptySVG width={200} />
-            <Text fontWeight="bold" fontSize={24} mt={5} textAlign="center">
-              No Data
-            </Text>
-          </Box>
-        </Center>
+        <EmptyData
+          SVG={<EmptySVG width={200} />}
+          dataCy="activity-empty-state"
+        />
       )}
 
       {isLoading ? (
@@ -101,7 +103,7 @@ function HomePage() {
           spacing={4}
           templateColumns="repeat(auto-fill, minmax(300px, 1fr))"
         >
-          {todo?.map((item) => (
+          {activity?.map((item) => (
             <ActivityCard
               key={item.id}
               index={item.id}
@@ -114,10 +116,13 @@ function HomePage() {
 
       {isModalOpen && (
         <ModalConfirmation
+          id={currentID}
+          entity={"activity"}
           isOpen={isModalOpen}
           onClose={onClose}
           title={currentTitle}
-          id={currentID}
+          needFeedbackToast={true}
+          setIsNeedRefetch={setIsNeedRefetch}
         />
       )}
     </Layout>

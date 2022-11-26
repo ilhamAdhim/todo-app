@@ -7,28 +7,45 @@ import {
   ModalCloseButton,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   chakra,
   Text,
   useColorModeValue,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { deleteActivity, getActivity } from "../../helpers/activity-fetcher";
+import { deleteActivity } from "../../helpers/activity-fetcher";
+import { deleteTodo } from "../../helpers/todo-fetcher";
 
-function ModalConfirmation({ isOpen, onClose, title, id }) {
+function ModalConfirmation({
+  id,
+  title,
+  isOpen,
+  entity,
+  onClose,
+  setIsNeedRefetch,
+  needFeedbackToast,
+}) {
   const [isLoading, setIsLoading] = useState(false);
+  const {
+    isOpen: alertOpen,
+    onOpen: alertOnOpen,
+    onClose: alertOnClose,
+  } = useDisclosure();
 
-  // const handleDelete = async () => {
-  //   setIsLoading(true);
-  //   const response = await deleteActivity(id);
-  //   if (response.statusText === "OK") {
-  //     onClose();
-  //     const response = await getActivity();
-  //     setTodo(response.data);
-  //     setIsLoading(false);
-  //   }
-  // };
+  const handleDelete = async () => {
+    setIsLoading(true);
+    let response;
+    if (entity === "activity") response = await deleteActivity(id);
+    else if (entity === "todo") response = await deleteTodo(id);
+
+    if (response.statusText === "OK") {
+      alertOnOpen();
+      await setTimeout(() => alertOnClose(), 2000);
+      await setTimeout(() => onClose(), 3000);
+      setIsNeedRefetch(true);
+    }
+  };
 
   return (
     <>
@@ -39,6 +56,7 @@ function ModalConfirmation({ isOpen, onClose, title, id }) {
           <ModalBody data-cy="modal-delete-title">
             <Flex justifyContent="center" p="8">
               <WarningIcon
+                data-cy="modal-delete-icon"
                 color={useColorModeValue("red", "red.300")}
                 fontSize="xxx-large"
               />
@@ -61,9 +79,7 @@ function ModalConfirmation({ isOpen, onClose, title, id }) {
             <Button
               colorScheme="red"
               borderRadius="xl"
-              // TODO : Belum ya
-              // onClick={handleDelete}
-              onClick={() => {}}
+              onClick={handleDelete}
               isLoading={isLoading}
               data-cy="modal-delete-confirm-button"
             >
@@ -72,6 +88,25 @@ function ModalConfirmation({ isOpen, onClose, title, id }) {
           </ModalFooter>
         </ModalContent>
       </Modal>
+
+      {needFeedbackToast && (
+        <Modal
+          isCentered
+          size="xl"
+          isOpen={alertOpen}
+          onClose={alertOnClose}
+          data-cy="modal-information"
+        >
+          <ModalContent>
+            <ModalBody as={Flex}>
+              <WarningIcon my="auto" color="teal" fontSize="md" />
+              <Text ml={2} my="auto">
+                Activity berhasil dihapus
+              </Text>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+      )}
     </>
   );
 }
