@@ -56,9 +56,9 @@ function ModalTodoOperation({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} data-cy="modal-add">
+    <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent data-cy="modal-add">
         <ModalHeader fontWeight="bold" data-cy="modal-add-title">
           Tambah List Item
         </ModalHeader>

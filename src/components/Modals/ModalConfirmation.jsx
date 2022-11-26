@@ -49,9 +49,9 @@ function ModalConfirmation({
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose} data-cy="modal-delete">
+      <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent data-cy="modal-delete">
           <ModalCloseButton />
           <ModalBody data-cy="modal-delete-title">
             <Flex justifyContent="center" p="8">

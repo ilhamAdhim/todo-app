@@ -233,7 +233,7 @@ function TodoDetail() {
               borderRadius="full"
               data-cy="todo-sort-button"
             />
-            <MenuList data-cy="sort">
+            <MenuList data-cy="sort-selection">
               {sortOptions.map((option, index) => (
                 <MenuItem
                   key={index}

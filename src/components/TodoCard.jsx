@@ -51,7 +51,7 @@ function TodoCard({ index, ...props }) {
               setIsDone(!e.target.checked);
               completeTodo(!e.target.checked);
             }}
-            data-cy="todo-item-checkboxc"
+            data-cy="todo-item-checkbox"
           />
           <Box
             w="4"
