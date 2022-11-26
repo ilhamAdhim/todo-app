@@ -13,7 +13,7 @@ import { Link } from "react-router-dom";
 
 function ActivityCard({ index, ...props }) {
   return (
-    <Card data-cy={`activity-item-${index}`}>
+    <Card data-cy={`activity-item`}>
       <Link to={`/detail/${props.id}`}>
         <CardHeader>
           <Heading size="sm" data-cy="activity-item-title">
