@@ -5,9 +5,7 @@ import useFetchActivity from "../hooks/useFetchActivity";
 
 import { ReactComponent as EmptySVG } from "../assets/no-data.svg";
 import {
-  Box,
   Button,
-  Center,
   Flex,
   SimpleGrid,
   Spinner,
@@ -38,11 +36,14 @@ function HomePage() {
     }
   };
 
-  const onClickDelete = useCallback(async (id, title) => {
-    onOpen();
-    setCurrentTitle(title);
-    setCurrentID(id);
-  }, []);
+  const onClickDelete = useCallback(
+    async (id, title) => {
+      onOpen();
+      setCurrentTitle(title);
+      setCurrentID(id);
+    },
+    [onOpen]
+  );
 
   useEffect(() => {
     // ? Refetch if any item is being created or deleted
@@ -57,7 +58,7 @@ function HomePage() {
     }
 
     refetchData();
-  }, [isNeedRefetch]);
+  }, [isNeedRefetch, setActivity, setIsLoading]);
 
   return (
     <Layout>

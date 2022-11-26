@@ -13,8 +13,6 @@ import {
   ModalOverlay,
   Select,
   chakra,
-  Box,
-  Text,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { createTodo } from "../../helpers/todo-fetcher";

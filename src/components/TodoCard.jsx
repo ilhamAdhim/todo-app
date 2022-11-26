@@ -7,14 +7,16 @@ function TodoCard({ index, ...props }) {
   const [isDone, setIsDone] = useState(props.is_active);
   const [priorityColor, setPriorityColor] = useState(props.priority);
 
-  const completeTodo = useCallback(async (value) => {
-    console.log(value);
-    const response = await updateTodo({
-      todoId: props.id,
-      is_active: value,
-      priority: props.priority,
-    });
-  }, []);
+  const completeTodo = useCallback(
+    async (value) => {
+      updateTodo({
+        todoId: props.id,
+        is_active: value,
+        priority: props.priority,
+      });
+    },
+    [props.id, props.priority]
+  );
 
   useEffect(() => {
     switch (props.priority) {
@@ -38,10 +40,6 @@ function TodoCard({ index, ...props }) {
         break;
     }
   }, [props.priority]);
-
-  // useEffect(() => {
-  //   completeTodo();
-  // }, [completeTodo]);
 
   return (
     <Card p="4" data-cy={`activity-item-${index}`}>

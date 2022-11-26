@@ -17,7 +17,7 @@ function useFetchTodo() {
     if (response.todo_items.length === 0) {
       setIsEmpty(true);
     }
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     fetchData();

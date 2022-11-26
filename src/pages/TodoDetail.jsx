@@ -9,15 +9,8 @@ import { ReactComponent as EmptySVG } from "../assets/no-data.svg";
 import { MdSort } from "react-icons/md";
 import { BiSortUp, BiSortDown } from "react-icons/bi";
 import { FaSortAlphaDown, FaSortAlphaDownAlt } from "react-icons/fa";
+import { AddIcon, ArrowBackIcon, CheckIcon, EditIcon } from "@chakra-ui/icons";
 import {
-  AddIcon,
-  ArrowBackIcon,
-  CheckCircleIcon,
-  CheckIcon,
-  EditIcon,
-} from "@chakra-ui/icons";
-import {
-  Box,
   Button,
   Editable,
   EditableInput,
@@ -114,7 +107,7 @@ function TodoDetail() {
   useEffect(() => {
     // ? Refetch if any item is being created or deleted
     async function refetchData() {
-      if (isNeedRefetch) {
+      if (isNeedRefetch && todo !== undefined) {
         setIsLoading(true);
         const response = await getTodoByActivity(todo.id);
         setTodo(response);
@@ -124,15 +117,18 @@ function TodoDetail() {
     }
 
     refetchData();
-  }, [isNeedRefetch]);
+  }, [isNeedRefetch, setTodo, setIsLoading, todo]);
 
   const onClickAddTodo = () => onOpen();
 
-  const onClickRemoveTodo = useCallback(async (id, title) => {
-    onOpenModalDelete();
-    setCurrentTitle(title);
-    setCurrentID(id);
-  }, []);
+  const onClickRemoveTodo = useCallback(
+    async (id, title) => {
+      onOpenModalDelete();
+      setCurrentTitle(title);
+      setCurrentID(id);
+    },
+    [onOpenModalDelete]
+  );
 
   useEffect(() => {
     if (isFiltering) {
@@ -193,7 +189,7 @@ function TodoDetail() {
           break;
       }
     }
-  }, [activeSortOption, isFiltering]);
+  }, [activeSortOption, isFiltering, setTodo]);
 
   useEffect(() => {
     console.log(todo?.todo_items, "todo");
