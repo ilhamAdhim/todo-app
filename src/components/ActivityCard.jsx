@@ -14,13 +14,13 @@ import { Link } from "react-router-dom";
 function ActivityCard({ index, ...props }) {
   return (
     <Card data-cy={`activity-item`}>
-      <Link to={`/detail/${props.id}`}>
-        <CardHeader>
+      <CardHeader>
+        <Link to={`/detail/${props.id}`}>
           <Heading size="sm" data-cy="activity-item-title">
             {props.title}
           </Heading>
-        </CardHeader>
-      </Link>
+        </Link>
+      </CardHeader>
 
       <CardFooter as={Flex} justifyContent="space-between">
         <Text my="auto" data-cy="activity-item-date">
